@@ -1,0 +1,5 @@
+terraform_state_bucket = "my-iot-insighthub-state-bucket"
+terraform_lock_table   = "my-iot-insighthub-locks"
+db_username            = "mydbuser"
+db_password            = "mydbpassword"
+bucket_name            = "my-iot-insighthub-archive-bucket"
