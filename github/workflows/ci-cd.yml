@@ -1,0 +1,48 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: '1.18'
+
+    - name: Build Telemetry Ingestor
+      working-directory: ./cmd/telemetry-ingestor
+      run: go build -o telemetry-ingestor .
+
+    - name: Build Secure API
+      working-directory: ./cmd/secure-api
+      run: go build -o secure-api .
+
+    - name: Run Tests
+      run: go test ./...
+
+    - name: Build Docker Images
+      run: |
+        docker build -t your-docker-repo/telemetry-ingestor:latest -f Dockerfile.telemetry .
+        docker build -t your-docker-repo/secure-api:latest -f Dockerfile.secureapi .
+
+    - name: Push Docker Images
+      run: |
+        docker push your-docker-repo/telemetry-ingestor:latest
+        docker push your-docker-repo/secure-api:latest
+
+    - name: Terraform Init and Apply
+      working-directory: ./infrastructure
+      run: |
+        terraform init
+        terraform apply -auto-approve
+
+    - name: ArgoCD Sync
+      run: |
+        # Example: trigger an ArgoCD sync using the CLI or API
+        argocd app sync iot-insighthub

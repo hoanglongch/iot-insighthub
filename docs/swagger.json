@@ -1,0 +1,72 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "API documentation for IoT InsightHub Secure API",
+    "version": "1.0.0",
+    "title": "IoT InsightHub Secure API"
+  },
+  "host": "localhost:8080",
+  "basePath": "/",
+  "schemes": ["http"],
+  "paths": {
+    "/ingest": {
+      "post": {
+        "summary": "Ingest telemetry data",
+        "description": "Stores telemetry data sent from devices.",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "data",
+            "description": "Telemetry data payload",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TelemetryData"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Telemetry data accepted"
+          },
+          "400": {
+            "description": "Invalid payload or validation error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "TelemetryData": {
+      "type": "object",
+      "required": ["device_id", "value", "time"],
+      "properties": {
+        "device_id": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number",
+          "format": "float"
+        },
+        "time": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "JWT Bearer token in the format: Bearer <token>"
+    }
+  }
+}

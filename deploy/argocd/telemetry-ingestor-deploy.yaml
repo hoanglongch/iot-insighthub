@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telemetry-ingestor
+  labels:
+    app: telemetry-ingestor
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: telemetry-ingestor
+  template:
+    metadata:
+      labels:
+        app: telemetry-ingestor
+    spec:
+      containers:
+      - name: telemetry-ingestor
+        image: your-docker-repo/telemetry-ingestor:latest
+        ports:
+        - containerPort: 9090  # Prometheus metrics exposed here
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: telemetry-ingestor-service
+spec:
+  selector:
+    app: telemetry-ingestor
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9090
